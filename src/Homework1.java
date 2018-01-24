@@ -11,48 +11,42 @@ import java.util.Stack;
 
 public class Homework1 extends JPanel
 		implements TreeSelectionListener {
+	private JTree tree1;
 	private JEditorPane htmlPane;
-	private JTree jTree;
-
-	//Optionally play with line styles.  Possible values are
-	//"Angled" (the default), "Horizontal", and "None".
+	public static String text;
+	public static Node head;
 	private static boolean playWithLineStyle = false;
-	private static String lineStyle = "Horizontal";
-
-	//Optionally set the look and feel.
 	private static boolean useSystemLookAndFeel = false;
-	public static Node root;
-	public static String Screen;
+	private static String lineStyle = "Horizontal";
 
 	public Homework1() {
 		super(new GridLayout(1,0));
-		//Create the nodes.
 		DefaultMutableTreeNode top =
-				new DefaultMutableTreeNode(root);
-		createNodes(root,top);
+				new DefaultMutableTreeNode(head);
+		createNodes(head,top);
 
-		//Create a tree that allows one selection at a time.
-		jTree = new JTree(top);
-		jTree.getSelectionModel().setSelectionMode
+
+		tree1 = new JTree(top);
+		tree1.getSelectionModel().setSelectionMode
 				(TreeSelectionModel.SINGLE_TREE_SELECTION);
 
-		//Listen for when the selection changes.
-		jTree.addTreeSelectionListener(this);
+
+		tree1.addTreeSelectionListener(this);
 
 		if (playWithLineStyle) {
 			System.out.println("line style = " + lineStyle);
-			jTree.putClientProperty("JTree.lineStyle", lineStyle);
+			tree1.putClientProperty("JTree.lineStyle", lineStyle);
 		}
 
-		//Create the scroll pane and add the tree to it.
-		JScrollPane treeView = new JScrollPane(jTree);
 
-		//Create the HTML viewing pane.
+		JScrollPane treeView = new JScrollPane(tree1);
+
+
 		htmlPane = new JEditorPane();
 		htmlPane.setEditable(false);
 		JScrollPane htmlView = new JScrollPane(htmlPane);
 
-		//Add the scroll panes to a split pane.
+
 		JSplitPane splitPane = new JSplitPane(JSplitPane.VERTICAL_SPLIT);
 		splitPane.setTopComponent(treeView);
 		splitPane.setBottomComponent(htmlView);
@@ -69,7 +63,7 @@ public class Homework1 extends JPanel
 					new DefaultTreeCellRenderer();
 			renderer.setClosedIcon(leafIcon);
 			renderer.setOpenIcon(leafIcon);
-			jTree.setCellRenderer(renderer);
+			tree1.setCellRenderer(renderer);
 		}
 
 		add(splitPane);
@@ -86,7 +80,7 @@ public class Homework1 extends JPanel
 	}
 	public void valueChanged(TreeSelectionEvent e) {
 		DefaultMutableTreeNode node = (DefaultMutableTreeNode)
-				jTree.getLastSelectedPathComponent();
+				tree1.getLastSelectedPathComponent();
 
 		if (node == null) return;
 		Object nodeInfo = node.getUserObject();
@@ -99,9 +93,9 @@ public class Homework1 extends JPanel
 		SetScreen(n);
 		if(isOperator(n.chr))
 		{
-			Screen=Screen+"="+calculate(n);
+			text=text+"="+calculate(n);
 		}
-		htmlPane.setText(Screen);
+		htmlPane.setText(text);
 	}
 
 	public static void createNodes(Node n, DefaultMutableTreeNode top){
@@ -123,14 +117,14 @@ public class Homework1 extends JPanel
 
 	public static void SetScreen(Node n)
 	{
-		Screen = "";
+		text = "";
 		if (isOperator(n.chr))
 		{
 			SetScreen2(n.left_Node);
-			Screen += n.chr;
+			text += n.chr;
 			SetScreen2(n.right_Node);
 		}else{
-			Screen += n.chr;
+			text += n.chr;
 		}
 	}
 
@@ -138,13 +132,13 @@ public class Homework1 extends JPanel
 	{
 		if (isOperator(n.chr))
 		{
-			Screen += "(";
+			text += "(";
 			SetScreen2(n.left_Node);
-			Screen += n.chr;
+			text += n.chr;
 			SetScreen2(n.right_Node);
-			Screen += ")";
+			text += ")";
 		}else{
-			Screen += n.chr;
+			text += n.chr;
 		}
 	}
 	private static void createAndShowGUI() {
@@ -171,13 +165,13 @@ public class Homework1 extends JPanel
 
 	static public void main(String[] args) {
 
-		root = new Node(args[0]);
-		Arr = root.str.split("");
+		head = new Node(args[0]);
+		Arr = head.str.split("");
 
-		String infixOperand = inorder(infix(root));
+		String infixOperand = inorder(infix(head));
 		System.out.print(infixOperand.substring(1, infixOperand.length()-1));
-		System.out.print("=" + calculate(infix(root)));
-		root = infix(root);
+		System.out.print("=" + calculate(infix(head)));
+		head = infix(head);
 		javax.swing.SwingUtilities.invokeLater(new Runnable() {
 			public void run() {
 				createAndShowGUI();
